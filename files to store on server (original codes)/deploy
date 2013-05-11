@@ -1,0 +1,31 @@
+#!/bin/bash
+
+clear
+
+# check for number of arguments
+if [ "$#" == "0" ]; then
+	echo "ERROR: One argument required"
+	exit 1
+fi
+
+if [ "$#" -ge "2" ]; then
+	echo "ERROR: Provide proper number of arguments"
+	exit 1
+fi
+
+# store the name of store in a variable
+store_name=$1
+
+db_name=$store_name"_production"
+
+user="facoteam1"
+pwd="anchanto"
+
+repo=$(echo create database $db_name | mysql -u $user -p$pwd)
+
+echo $db_name" database created"
+
+cd /home/facoteam1/backup/
+mysql -u facoteam1 -panchanto $store_name"_production" < $store_name"_development.out"
+
+echo " Now exit from server"

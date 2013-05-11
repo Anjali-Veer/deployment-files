@@ -1,0 +1,41 @@
+#!/bin/bash
+clear
+
+# check for number of arguments
+if [ "$#" == "0" ]; then
+	echo "ERROR: One argument required"
+	exit 1
+fi
+
+if [ "$#" -ge "2" ]; then
+	echo "ERROR: Provide proper number of arguments"
+	exit 1
+fi
+
+# store the name of store in a variable
+store_name=$1
+sed -i "s/server/server_$store_name/g" keys_bash
+sed -i "s|cd /home/facoteam1/stores/.*/current|cd /home/facoteam1/stores/$store_name/current|g" keys_bash
+sed -i "18 s|/home/facoteam1/stores/.*/current/|/home/facoteam1/stores/$store_name/current/|g" keys_bash
+sed -i "20 s|/home/facoteam1/stores/.*/current/|/home/facoteam1/stores/$store_name/current/|g" keys_bash
+echo "changed keys_bash file...."
+sed -i "4 s/server.*/server_$store_name.crt;/" server_details
+sed -i "5 s/server.*/server_$store_name.key;/" server_details
+sed -i "s|root /home/facoteam1/stores/.*/current/public|root /home/facoteam1/stores/$store_name/current/public|g" server_details
+echo "changed server details...."
+
+echo "Starting the ssl implementation...."
+
+sudo ./keys_bash
+echo "Keys and certificates generated...."
+
+cat keys_bash_backup>keys_bash
+
+sudo ./file_bash
+
+echo "Starting the server...."
+
+sudo /etc/init.d/nginx start
+
+echo "Go n check your site now...."
+

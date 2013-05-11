@@ -1,0 +1,12 @@
+server {
+listen 
+ssl                  on;
+ssl_certificate      /etc/ssl/certs/server.crt
+ssl_certificate_key  /etc/ssl/keys/server.key
+passenger_enabled on;
+root /home/facoteam1/stores/spreestore/current/public;
+passenger_spawn_method smart;
+passenger_use_global_queue on;
+rails_env production;
+}
+}

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# remove all commented lines
+sed 's/\#.*//g' /opt/nginx/conf/nginx.conf > tt
+if [ $? -eq 0 ]; then
+	echo
+else
+	echo "ERROR: Check the path of configuration file"
+	exit
+fi
+mv tt /opt/nginx/conf/nginx.conf
+
+# remove all the blank lines
+sed '/^$/d' /opt/nginx/conf/nginx.conf > tt
+mv tt /opt/nginx/conf/nginx.conf
+
+# read a file from end and exit when line found with matching pattern and store result in a variable
+var=$(cat /opt/nginx/conf/nginx.conf | perl -e 'print reverse<>' | grep -m 1 "listen ")
+
+# extract port number from the obtained line, store in variable, increment the value
+var1=$(echo $var | cut -d ' ' -f 2)
+var2=$(echo $var1 | sed '$s/.$//')
+var2=$((var2+1))
+
+if [ $var2 == 1 ]; then
+	var2=6000
+fi
+
+# replace in new file of server data
+sed -i "s/listen.*/listen ${var2};/g" server_details
+
+# delete last 2 lines of the file and make permanent changes
+head -n -1 /opt/nginx/conf/nginx.conf >tempfile.txt
+mv tempfile.txt /opt/nginx/conf/nginx.conf
+
+# append another file
+cat server_details >> /opt/nginx/conf/nginx.conf
+
+if [ $? -eq 0 ]; then
+	echo "Configuration file successfully changed...."
+else
+	echo "ERROR: Cannot change the configuration file"
+	exit
+fi
+
+

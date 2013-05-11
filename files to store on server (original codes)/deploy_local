@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# copy deploy.rb to local machine
+sudo scp -r facoteam1@50.57.231.142:/home/facoteam1/bash/deploy.rb /home/
+
+# copy Capfile to local machine
+sudo scp -r facoteam1@50.57.231.142:/home/facoteam1/bash/Capfile /home/
+
+# copy deploy_local to local machine
+# sudo scp -r facoteam1@50.57.231.142:/home/facoteam1/bash/deploy_local /home/
+
+echo "-----------------------------------------------------------------"
+echo " Copy the deploy.rb in /config"
+echo " Change username and password in database.yml file to 'facoteam1' and 'anchanto'"
+echo " Commit all changes to git"
+echo " Run ./deploy_local_cap {store_name}"
+echo "-----------------------------------------------------------------"
+
+
+

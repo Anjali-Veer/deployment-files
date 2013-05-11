@@ -1,0 +1,55 @@
+#!/bin/bash
+
+clear 
+
+# check for number of arguments
+if [ "$#" == "0" ]; then
+	echo "ERROR: One argument required"
+	exit 1
+fi
+
+if [ "$#" -ge "2" ]; then
+	echo "ERROR: Provide proper number of arguments"
+	exit 1
+fi
+
+# store the name of store in a variable
+store_name=$1
+
+db="deployment_production"
+user='facoteam1'
+pwd='anchanto'
+
+# select repository of store
+repo=$(echo "select url from entries where name='$store_name'" | mysql $db -u $user -p$pwd)
+
+# use of cut command to extract 2nd word i.e. url from the line extracted from database
+url=$(echo $repo | cut -d ' ' -f 2)
+
+# select ip address of store
+ipadd=$(echo "select ip from entries where name='$store_name'" | mysql $db -u $user -p$pwd)
+
+# use of cut command to extract 2nd word i.e. ip from the line extracted from database
+ip=$(echo $ipadd | cut -d ' ' -f 2)
+
+# replace application name
+sed -i "s/set :application, .*/set :application, \"$store_name\"/g" deploy.rb
+
+# replace url
+sed -i "s|set :repository, .*|set :repository, \"$url\"|g" deploy.rb
+
+# replace IP address of server
+sed -i "s/server .*/server \"$ip\", :web, :app, :db, :primary => true/g" deploy.rb
+
+echo "-----------------------------------------------------------------"
+echo " Execute following command on your local terminal"
+echo " sudo scp facoteam1@50.57.231.142:/home/facoteam1/bash/deploy_local /home/PATH OF YOUR APP"
+echo " sudo scp facoteam1@50.57.231.142:/home/facoteam1/bash/deploy_local_cap /home/PATH OF YOUR APP"
+echo " Now these files will be copied in your /home/PATH OF YOUR APP folder. Go to PATH TO APP folder and run :"
+echo " ./deploy_local"
+echo "-----------------------------------------------------------------"
+
+
+exit
+
+
